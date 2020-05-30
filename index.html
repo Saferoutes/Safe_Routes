@@ -25,8 +25,8 @@
             <div id="filterbox" style="display: block; opacity: 0.85;">
                 <h3 class="boxheader"> Accident Factors </h3>
                 <button type="button" class="btn btn-primary">Accident Factors</button>
-                <button type="button" class="btn btn-danger">Achohol</button>
-                <button type="button" class="btn btn-info">Drug</button>
+                <button type="button" class="btn btn-danger" onclick="alcoholFilter()">Alcohol</button>
+                <button type="button" class="btn btn-info" onclick="drugFilter()">Drug</button>
             </div>
         </div>
 
@@ -34,6 +34,8 @@
             <div id="map"> </div>
         </div>
         <script>
+            var globalMap;
+
             function initMap() {
                 //Map options
                 var options = {
@@ -46,6 +48,7 @@
 
                 //New Map
                 var map = new google.maps.Map(document.getElementById('map'), options);
+                globalMap = map;
 
                 //Listen for click on map
                 google.maps.event.addListener(map, 'click', function(event) {
@@ -71,6 +74,9 @@
                   });
                   */
 
+            }
+
+            function alcoholFilter() {
                 // Array of markers
                 var markers = [{
                     coords: {
@@ -85,12 +91,6 @@
                         lng: -120.7120
                     },
                     content: '<h1>Merced, CA</h1>'
-                }, {
-                    coords: {
-                        lat: 32.7157,
-                        lng: -117.1611
-                    },
-                    content: '<h1>San Diego, CA</h1>'
                 }, ];
 
                 // Loop through markers
@@ -99,13 +99,53 @@
                     addMarker(markers[i]);
                 }
 
-
-
-                //Add Marker Function
                 function addMarker(props) {
                     var marker = new google.maps.Marker({
                         position: props.coords,
-                        map: map,
+                        map: globalMap,
+                        //icon:props.iconImage
+                    });
+
+                    //Check for custom icon
+                    if (props.iconImage) {
+                        // Set icon image
+                        marker.setIcon(props.iconImage);
+                    }
+
+                    //Check content
+                    if (props.content) {
+                        var InfoWindow = new google.maps.InfoWindow({
+                            content: props.content
+                        });
+                        marker.addListener('click', function() {
+                            InfoWindow.open(map, marker);
+                        });
+
+                    }
+                }
+            }
+
+            function drugFilter() {
+                // Array of markers
+                var markers = [{
+                    coords: {
+                        lat: 33.8366,
+                        lng: -117.9143
+                    },
+                    iconImage: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+                    content: '<h1> Anaheim, CA </h1>'
+                }, ];
+
+                // Loop through markers
+                for (var i = 0; i < markers.length; i++) {
+                    //Add Marker
+                    addMarker(markers[i]);
+                }
+
+                function addMarker(props) {
+                    var marker = new google.maps.Marker({
+                        position: props.coords,
+                        map: globalMap,
                         //icon:props.iconImage
                     });
 

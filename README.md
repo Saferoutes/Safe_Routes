@@ -16,3 +16,6 @@ git push
 
 ### Checkout a new branch
 `git branch checkout branch_name`
+
+### Cleanup branches
+`git remote prune origin`
