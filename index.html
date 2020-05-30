@@ -163,11 +163,12 @@
                 },];
 
                 // Loop through markers
+                function setMapOnAll(map){
                 for (var i = 0; i < markers.length; i++) {
                     //Add Marker
                     addMarker(markers[i]);
+                    }
                 }
-
                 function addMarker(props) {
                     var marker = new google.maps.Marker({
                         position: props.coords,
