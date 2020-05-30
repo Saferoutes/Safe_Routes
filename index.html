@@ -22,21 +22,6 @@
             height: 400px;
             width: 100%;
         }
-
-        #floating-panel {
-            position: absolute;
-            top: 10px;
-            left: 25%;
-            z-index: 5;
-            background-color: #fff;
-            padding: 5px;
-            border: 1px solid #999;
-            text-align: center;
-            font-family: 'Roboto', 'sans-serif';
-            line-height: 30px;
-            padding-left: 10px;
-        }
-    </style>
 </head>
 
 <body>
@@ -50,12 +35,6 @@
                 <button type="button" class="btn btn-info" onclick="drugFilter()">Drug</button>
             </div>
         </div>
-        <div id="floating-panel">
-            <input onclick="clearMarkers()" type=button value="Hide Markers">
-            <input onclick="showMarkers()" type=button value="Show All Markers">
-            <input onclick="deleteMarkers()" type=button value="Delete Markers">
-        </div>
-
         <div class="container">
             <div id="map"> </div>
         </div>
@@ -191,24 +170,6 @@
                         });
 
                     }
-                }
-                // Removes the markers from the map, but keeps them in the array.
-                function clearMarkers() {
-                    drugFilter(null);
-                    alcoholFilter(null);
-                }
-
-                // Shows any markers currently in the array.
-                function showMarkers() {
-                    drugFilter(map);
-                    alcoholFilter(map);
-
-                }
-
-                // Deletes all markers in the array by removing references to them.
-                function deleteMarkers() {
-                    clearMarkers();
-                    markers = [];
                 }
             }
 
