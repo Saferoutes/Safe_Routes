@@ -123,34 +123,8 @@
 
                     }
                 }
-                
-                function removeMarkers(){
-                    for(i=0; i<markers.length; i++){
-                        subMarkers(markers[i]);
-                }
-                function subMarker(props) {
-                    var marker = new google.maps.Marker({
-                        position: props.coords,
-                        map: globalMap,
-                        //icon:props.iconImage
-                    });
-
-                    //Check for custom icon
-                    if (props.iconImage > 0) {
-                        // Set icon image
-                        marker.setIcon(null);
-                    }
-
-                    //Check content
-                    if (props.content) {
-                        var InfoWindow = new google.maps.InfoWindow({
-                            content: props.content
-                        });
-                        marker.addListener('click', function() {
-                            InfoWindow.open(map, marker);
-                        });
-
-                    }
+                function clearMarker(){
+                    alcoholFilter(null);
                 }
             }
 
