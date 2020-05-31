@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<!-- 
+         Description: My application is a app that helps users determine what is the safest route to take
+                      by giving them the ability to see where previous road incidents occured related to Substance
+                      Abuse, Speeding, Distracted Driving, etc. They can see where incidents occured in the past
+                      at the precise location derived from a collection of a government database that hosts latitudes
+                      and longitudes of these incidents. The objective is to provide information on what routes contain
+                      the most incidents thus giving them the ability to decide to take the safest route or the route
+                      with less incidents.
+         For this application we use:
+         -HTML
+         -Bootstrap: learned this for easier CSS styling since it has predefined styled components
+         -Flask and Python: Flask is a python framework that is used for the backend functionality. Primarily
+                            we used Flask to parse the 300k+ csv file containing all the data for the incidents.
+         -Google Maps Api: Google's API for creating and modifying the map
+         -Google Cloud App Engine: We deployed out site using Google Cloud's app engine which adds Google debugging, Google analytics, and Google storage.
+                                   We deployed it using the gcloud cli. We created a project on Google Cloud console and then deployed our app to a server
+                                   hosted on uswest2, and then deployed to the projected created in google cloud using the gcloud app deploy command.
+         -Google Cloud URL: https://saferoutes-278721.wl.r.appspot.com/
+-->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <title>SafeRoute -0xzs</title>
+    <style>
+        #map {
+            height: 100vh;
+            width: 100vw;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- navbar that displays the site navigation -->
+    <nav class="navbar navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">SafeRoutes</a>
+    </nav>
+    <!-- container: has all filters and the all incidents and substance buttons that call javascript functions -->
+    <div class="container">
+        <div class="container">
+            <div id="filterbox" style="display: block; opacity: 0.85;">
+                <h2>Accident Factors</h2>
+                <button id="all" type="radio" class="btn btn-outline-success" onclick="allFilter()">All Incidents</button>
+                <button id="substance" type="radio" class="btn btn-outline-danger" onclick="substanceAbuseFilter()">Substance Abuse</button>
+            </div>
+            <br />
+        </div>
+    </div>
+    <!-- map: used by javascript and google to create map -->
+    <div id="map"></div>
+        <script>
+            // global variables that are used across different functions
+            var globalMap;
+            var globalMarkers = [];
+            var globalSubstanceAbuseMarkers = [];
+
+            // variables that are receiving python parsed csv array from the data.csv file
+            var substanceData = {{ substance_data|safe }}
+            var allIncidentsData = {{ all_data|safe }}
+        
+            // function that initializes the google map using google api
+            function initMap() {
+                // here we create options for the map
+                var options = {
+                    zoom: 8,
+                    center: {
+                        lat: 33.7175,
+                        lng: -117.8311
+                    }
+                }
+
+                // here we create a new map using googles api
+                var map = new google.maps.Map(document.getElementById('map'), options);
+                globalMap = map;
+
+                // we call the initMarkers function to initialze all markers
+                initMarkers();
+            }
+
+            // this is the initMarkers function that initializes all the markers
+            function initMarkers() {
+                for (var i = 0; i < allIncidentsData.length; i++) {
+                    var currentMarker = {
+                    coords: {
+                        lat: parseFloat(allIncidentsData[i][0]),
+                        lng: parseFloat(allIncidentsData[i][1])
+                    },
+                        iconImage: "/static/car.png",
+                        content: '<h1> ' + parseFloat(allIncidentsData[i][0]) + ', ' + parseFloat(allIncidentsData[i][1]) + ' </h1>'
+                    };
+                    addMarkers(currentMarker);
+                }
+                for (var i = 0; i < substanceData.length; i++) {
+                    var currentMarker = {
+                    coords: {
+                        lat: parseFloat(substanceData[i][0]),
+                        lng: parseFloat(substanceData[i][1])
+                    },
+                        iconImage: "/static/substance.png",
+                        content: '<h1> ' + parseFloat(substanceData[i][0]) + ', ' + parseFloat(substanceData[i][1]) + ' </h1>'
+                    };
+                    addMarkers(currentMarker);
+                }
+            }
+
+            // function for the, All Incidents, button that displays all incidents
+            function allFilter() {
+                setMapOnAll(globalMap);
+            }
+
+            // function for the, Substance Abuse, button that displays substance abuse incidents
+            function substanceAbuseFilter() {
+                clearMarkers();
+                // Array of markers
+                for (var i = 0; i < substanceData.length; i++) {
+                    var currentMarker = {
+                    coords: {
+                        lat: parseFloat(substanceData[i][0]),
+                        lng: parseFloat(substanceData[i][1])
+                    },
+                        iconImage: "/static/substance.png",
+                        content: '<h1> ' + parseFloat(substanceData[i][0]) + ', ' + parseFloat(substanceData[i][1]) + ' </h1>'
+                    };
+                    addMarkers(currentMarker);
+                }
+            }
+
+            // this functions sole responsobility is to add the markers to the map using googles api
+            function addMarkers(props) {
+                var marker = new google.maps.Marker({
+                    position: props.coords,
+                    map: globalMap,
+                    //icon:props.iconImage
+                });
+
+                //Check for custom icon
+                if (props.iconImage) {
+                    // Set icon image
+                    marker.setIcon(props.iconImage);
+                }
+
+                //Check content
+                if (props.content) {
+                    var InfoWindow = new google.maps.InfoWindow({
+                        content: props.content
+                    });
+                    marker.addListener('click', function() {
+                        InfoWindow.open(map, marker);
+                    });
+                }
+                globalMarkers.push(marker);
+            }
+
+            // this function is to display all hidden markers or both Substance Abuse incidents and non-Substance Abuse incidents
+            function setMapOnAll(globalMap) {
+                for (var i = 0; i < globalMarkers.length; i++) {
+                    globalMarkers[i].setMap(globalMap);
+                }
+            }
+
+            // this function is used to clear all the markers each time a filter button is pressed
+            function clearMarkers() {
+                setMapOnAll(null);
+            }
+        </script>
+        <!-- googles api src code: here is where we imported googles api src code from the src url -->
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyClkkbTZWQCEWOwE-En87lYf0f7rxL6c-Y&callback=initMap">
+        </script>
+</body>
+
+</html>
