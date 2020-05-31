@@ -1,6 +1,8 @@
 # Safe_Routes
 Rookie Hackathon Project
 
+URL: https://saferoutes-278721.wl.r.appspot.com/
+
 ## Description
 Our application is a app that helps users determine what is the safest route to take occured related to Substance incidents occured in the past government database that hosts latitudes information on what routes contain take the safest route or the route with less incidents.
 
@@ -30,3 +32,24 @@ git push
 
 ### Cleanup branches
 `git remote prune origin`
+
+# Gcloud deploying app
+
+Commands to authenticate  and deploy to project we created on google cloud console.
+```
+gcloud auth application-default login
+gcloud app deploy
+```
+
+App structure from docs:
+```
+SAFE_ROUTES/
+    app.yaml
+    main.py
+    requirements.txt
+    static/
+        script.js
+        style.css
+    templates/
+        index.html
+```
