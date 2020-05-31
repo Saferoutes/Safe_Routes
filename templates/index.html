@@ -132,48 +132,6 @@
                 }
             }
 
-            // speeding filter: deprecated beacause out of time
-            function speedingFilter() {
-                clearMarkers();
-                // Array of markers
-                var markers = [{
-                    coords: {
-                        lat: 33.8366,
-                        lng: -117.9143
-                    },
-                    iconImage: '/static/speed.png',
-                    content: '<h1> Anaheim, CA </h1>'
-                }, ];
-
-                // Loop through markers
-                for (var i = 0; i < markers.length; i++) {
-                    //Add Marker
-                    addMarkers(markers[i]);
-                }
-
-            }
-
-            // distracted drivers filter: deprecated beacause out of time
-            function distractedDrivingFilter() {
-                clearMarkers();
-                // Array of markers
-                var markers = [{
-                    coords: {
-                        lat: 33.9806,
-                        lng: -117.3755
-                    },
-                    iconImage: '/static/distracted.png',
-                    content: '<h1> Riverside, CA </h1>'
-                }, ];
-
-                // Loop through markers
-                for (var i = 0; i < markers.length; i++) {
-                    //Add Marker
-                    addMarkers(markers[i]);
-                }
-
-            }
-
             // this functions sole responsobility is to add the markers to the map using googles api
             function addMarkers(props) {
                 var marker = new google.maps.Marker({
